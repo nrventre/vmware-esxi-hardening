@@ -55,14 +55,14 @@ else {
     #Check if the firs NTP Server is missing, if so, add the server.
     if ($ntp1check -ne $Null) {
     Write-Host -f green "Server $ntp1 is missing"
-    $ntp1check | ForEach-Object {Get-VMHost "$ntp1check.$domain" | Remove-VMHostNtpServer -NtpServer $ntp2 -Confirm:$false}
-    $ntp1check | ForEach-Object {Get-VMHost "$ntp1check.$domain" | Add-VMHostNtpServer -NtpServer $ntp1,$ntp2 -Confirm:$false}
+    $ntp1check | ForEach-Object {Get-VMHost "$_.$domain" | Remove-VMHostNtpServer -NtpServer $ntp2 -Confirm:$false}
+    $ntp1check | ForEach-Object {Get-VMHost "$_.$domain" | Add-VMHostNtpServer -NtpServer $ntp1,$ntp2 -Confirm:$false}
     Write-Host -f green "Server $ntp1 was added successfully"
     }
     #Check if the Second NTP Server is missing, if so, add the server.
     elseif ($ntp2check -ne $Null) {
     Write-Host -f green "Server $ntp2 is missing"
-    $ntp2check | ForEach-Object {Get-VMHost "$ntp2check.$domain" | Add-VMHostNtpServer -NtpServer $ntp2}
+    $ntp2check | ForEach-Object {Get-VMHost "_.$domain" | Add-VMHostNtpServer -NtpServer $ntp2}
     Write-Host -f green "Server $ntp2 was added successfully"
     }
     else {
@@ -262,7 +262,7 @@ Write-Host -f White "###############################################"
 Get-VMHost | Get-AdvancedSetting -Name Security.AccountLockFailures  | Select Entity, Name, Value | Out-String | ForEach-Object { $_.Trim() } > "$env:USERPROFILE\Documents\HardeningESXi-Logs\aclf-config.txt"
 
 function alfconfig {
-$checkaclf = Get-VMHost | Get-AdvancedSetting -Name Security.AccountLockFailures  | Select Entity, Name, Value | where-object {$_.value -notlike '*5*'} | Select-Object Entity | ft Entity | findstr /v " _$Null Entity ------ _$Null" | foreach{$_.split(".")[0]} | Out-String | ForEach-Object { $_.Trim() } | where {$_ -ne ""}
+$checkaclf = Get-VMHost | Get-AdvancedSetting -Name Security.AccountLockFailures  | Select Entity, Name, Value | where-object {$_.value -notlike '*5*'} | Select-Object Entity | ft Entity | findstr /v " _$Null Entity ------ _$Null" | foreach{$_.split(".")[0]} | where {$_ -ne ""}
     if ($checkaclf -eq $Null) {
     Write-Host -f green "All Hosts have AccountLockFailures in 5"
     }
@@ -336,7 +336,7 @@ Write-Host -f White "#####################################################"
 #Check Security Password Quality Control, needs to be in "min=disabled,disabled,4,8,8"
 Get-VMHost | Get-AdvancedSetting -Name Security.PasswordQualityControl  | Select Entity, Name, Value | Out-String | ForEach-Object { $_.Trim() } > "$env:USERPROFILE\Documents\HardeningESXi-Logs\spqc-config.txt"
 
-$checkspqc = Get-VMHost | Get-AdvancedSetting -Name Security.PasswordQualityControl  | Select Entity, Name, Value | where-object {$_.value -notlike '*min=disabled,disabled,4,8,8*'} | Select-Object Entity | ft Entity | findstr /v " _$Null Entity ------ _$Null" | foreach{$_.split(".")[0]} | Out-String | ForEach-Object { $_.Trim() } | where {$_ -ne ""}
+$checkspqc = Get-VMHost | Get-AdvancedSetting -Name Security.PasswordQualityControl  | Select Entity, Name, Value | where-object {$_.value -notlike '*min=disabled,disabled,4,8,8*'} | Select-Object Entity | ft Entity | findstr /v " _$Null Entity ------ _$Null" | foreach{$_.split(".")[0]} | where {$_ -ne ""}
 
 function spqcconfig {
     if ($checkspqc -eq $Null) {
