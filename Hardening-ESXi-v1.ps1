@@ -62,7 +62,7 @@ else {
     #Check if the Second NTP Server is missing, if so, add the server.
     elseif ($ntp2check -ne $Null) {
     Write-Host -f green "Server $ntp2 is missing"
-    $ntp2check | ForEach-Object {Get-VMHost "_.$domain" | Add-VMHostNtpServer -NtpServer $ntp2}
+    $ntp2check | ForEach-Object {Get-VMHost "$_.$domain" | Add-VMHostNtpServer -NtpServer $ntp2}
     Write-Host -f green "Server $ntp2 was added successfully"
     }
     else {
